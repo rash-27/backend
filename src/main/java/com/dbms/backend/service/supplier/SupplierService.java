@@ -1,0 +1,101 @@
+package com.dbms.backend.service.supplier;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.dbms.backend.models.supplier.SupplierDetails;
+import com.dbms.backend.repo.supplier.SupplierRepo;
+import java.util.List;
+import com.dbms.backend.models.supplier.SupplierEmail;
+import com.dbms.backend.models.supplier.SupplierPhone;
+
+@Service
+public class SupplierService {
+    @Autowired
+    SupplierRepo supplierRepo;
+
+    public void addSupplier(SupplierDetails supplieDetails) {
+        try{
+            supplierRepo.addSupplier(supplieDetails);
+        }catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void updateSupplierById(int id, SupplierDetails supplierDetails) {
+        try{
+            supplierRepo.updateSupplierById(id, supplierDetails);
+        }catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void deleteSupplierById(int id) {
+        try{
+            supplierRepo.deleteSupplierById(id);
+        }catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public List<SupplierDetails> getSupplier() {
+        try{
+            return supplierRepo.getSupplier();
+        }catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    // Email Service
+
+    public void addSupplierEmailById(int id, SupplierEmail supplierEmail) {
+        try{
+            supplierRepo.addSupplierEmailById(id, supplierEmail);
+        }catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public List<SupplierEmail> getSupplierEmailById(int id) {
+        try{
+            return supplierRepo.getSupplierEmailById(id);
+        }catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void deleteSupplierEmailById(int id, int email_id) {
+        try{
+            supplierRepo.deleteSupplierEmailById(id, email_id);
+        }catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    // Phone Service
+
+    public void addSupplierPhoneById(int id, SupplierPhone supplierPhone) {
+        try{
+            supplierRepo.addSupplierPhoneById(id, supplierPhone);
+        }catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public List<SupplierPhone> getSupplierPhoneById(int id) {
+        try{
+            return supplierRepo.getSupplierPhoneById(id);
+        }catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void deleteSupplierPhoneById(int id, int phone_id) {
+        try{
+            supplierRepo.deleteSupplierPhoneById(id, phone_id);
+        }catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+    
+}
