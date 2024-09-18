@@ -26,7 +26,7 @@ public class CustomerRepo {
 
     public void addCustomer(CustomerDetails customerDetails) {
         try{
-            String sql = "INSERT INTO customer (name, address, email, phone, points) VALUES (?, ?, ?, ?, ?)";
+            String sql = "INSERT INTO customer (name, address, email, phone_number, points) VALUES (?, ?, ?, ?, ?)";
             jdbcTemplate.update(sql, customerDetails.name(), customerDetails.address(), customerDetails.email(), customerDetails.phone_number(), customerDetails.points());
         }catch (Exception e) {
             throw new RuntimeException(e);
@@ -35,7 +35,7 @@ public class CustomerRepo {
 
     public void updateCustomerPoints(int id, CustomerDetails customerDetails) {
         try{
-            String sql = "UPDATE customer SET name = ?, address = ?, email = ?, phone = ?, points = ? WHERE id = ?";
+            String sql = "UPDATE customer SET name = ?, address = ?, email = ?, phone_number = ?, points = ? WHERE id = ?";
             jdbcTemplate.update(sql,customerDetails.name(), customerDetails.address(), customerDetails.email(), customerDetails.phone_number(), customerDetails.points() , id);
         }catch (Exception e) {
             throw new RuntimeException(e);
