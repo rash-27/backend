@@ -2,6 +2,7 @@ package com.dbms.backend.controller.dresses;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -39,7 +40,7 @@ public class DressController {
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<Boolean> updateDress(int id, @RequestBody DressDetails dressDetails) {
+    public ResponseEntity<Boolean> updateDress(@PathVariable("id") int id, @RequestBody DressDetails dressDetails) {
         try{
             dressService.updateDress(id, dressDetails);
             return ResponseEntity.ok(true);

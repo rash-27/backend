@@ -30,9 +30,10 @@ public class DressRepo {
             throw new IllegalArgumentException("Id in path and body do not match");
         }
         try{
-            String sql = "Update dress SET name SET name = ?, brand = ?, gender = ?, size = ?, color = ?, required_quantity = ? WHERE id = ?";
+            String sql = "Update dress SET name = ?, brand = ?, gender = ?, size = ?, color = ?, required_quantity = ? WHERE id = ?";
             jdbcTemplate.update(sql, dressDetails.name(), dressDetails.brand(), dressDetails.gender(), dressDetails.size(), dressDetails.color(), dressDetails.required_quantity(), id);
         }catch(Exception e){
+            System.out.println("SQL Exception");
             throw new RuntimeException(e);
         }
     }

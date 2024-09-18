@@ -3,6 +3,7 @@ package com.dbms.backend.repo.supplier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import com.dbms.backend.models.supplier.SupplierActiveCollection;
 import com.dbms.backend.models.supplier.SupplierDetails;
 import com.dbms.backend.models.supplier.SupplierDetailsRowMapper;
 import com.dbms.backend.models.supplier.SupplierEmail;
@@ -117,5 +118,32 @@ public class SupplierRepo {
             throw new RuntimeException(e);
         }
     }
-    
+    // Supplier Available Dress Collection -- No need for update (Update is done in transaction)
+
+    public void addSupplierActiveDressCollection(int supplier_id,  int dress_id) {
+        try{
+            String sql = "INSERT INTO supplier_active_dress_collection (supplier_id, dress_id, quality, no_of_times_bought) VALUES (?, ?, ?, ?)";
+            jdbcTemplate.update(sql, supplier_id, dress_id, 0, 0);
+        }catch(Exception e){
+            throw new RuntimeException(e);
+        }
+    }
+
+    public List<SupplierActiveCollection> getSupplierActiveDressCollection(int supplier_id) {
+        try{
+            String sql = "SELECT * FROM supplier_active_dress_collection WHERE supplier_id = ?";
+            return jdbcTemplate.query(sql, (rs, rowNum) -> new SupplierActiveCollection(rs.getInt("id"), rs.getInt("supplier_id"), rs.getInt("dress_id"), rs.getInt("quality"), rs.getInt("no_of_times_bought")), supplier_id);
+        }catch(Exception e){
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void deleteSupplierActiveDressCollection(int supplier_id, int dress_id) {
+        try{
+            String sql = "DELETE FROM supplier_active_dress_collection WHERE supplier_id = ? AND dress_id = ?";
+            jdbcTemplate.update(sql, supplier_id, dress_id);
+        }catch(Exception e){
+            throw new RuntimeException(e);
+        }
+    }
 }

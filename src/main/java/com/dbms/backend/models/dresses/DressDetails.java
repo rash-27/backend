@@ -1,6 +1,6 @@
 package com.dbms.backend.models.dresses;
 
-public record DressDetails(int id, String name, String brand, String gender, String size, String color, int required_quantity) {
+public record DressDetails(Integer id, String name, String brand, String gender, String size, String color, int required_quantity) {
     public DressDetails {
         if (name == null || name.isBlank()) {
             throw new IllegalArgumentException("Name cannot be null or empty");
