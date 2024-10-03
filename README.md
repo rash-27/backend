@@ -23,5 +23,5 @@ docker compose up --build
 ### Now we can check the health of the application by visiting the following URL in the browser
 
 ```sh
-http://localhost:8000/
+http://localhost:8080/
 ```
