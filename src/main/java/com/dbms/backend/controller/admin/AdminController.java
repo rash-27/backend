@@ -1,5 +1,7 @@
 package com.dbms.backend.controller.admin;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -11,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dbms.backend.models.user.UserDetails;
+import com.dbms.backend.models.user.UserDisplayDetails;
 import com.dbms.backend.service.user.UserService;
 
 @RestController
@@ -43,6 +46,15 @@ public class AdminController{
             return ResponseEntity.ok(true);
         }catch (Exception e) {
             return ResponseEntity.status(500).body(false);
+        }
+    }
+
+    @GetMapping("/get_users")
+    public ResponseEntity<List<UserDisplayDetails>> getUsersDisplay() {
+        try{
+            return ResponseEntity.ok(userService.getUsersDisplay());
+        }catch (Exception e) {
+            return ResponseEntity.status(500).body(null);
         }
     }
 

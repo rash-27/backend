@@ -33,7 +33,7 @@ public class SecurityConfiguration {
                     req.requestMatchers(WHITE_LIST_URL)
                         .permitAll()
                         .requestMatchers("/admin/**").hasAuthority("ADMIN")
-                        .anyRequest().hasAuthority("ROLE");
+                        .anyRequest().hasAuthority("USER");
              
             }
           )

@@ -4,7 +4,9 @@ import org.springframework.stereotype.Repository;
 
 import com.dbms.backend.models.user.User;
 import com.dbms.backend.models.user.UserDetails;
+import com.dbms.backend.models.user.UserDisplayDetails;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -66,6 +68,15 @@ public class UserRepo{
         try{
             String sql = "DELETE FROM users WHERE id = ?";
             jdbcTemplate.update(sql, id);
+        }catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public List<UserDisplayDetails> getUsersDisplay() {
+        try{
+            String sql = "SELECT * FROM users";
+            return jdbcTemplate.query(sql, (rs, rowNum) -> new UserDisplayDetails(rs.getInt("id"), rs.getString("phone_number"), rs.getString("role"), rs.getString("name")));
         }catch (Exception e) {
             throw new RuntimeException(e);
         }
