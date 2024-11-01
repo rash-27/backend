@@ -1,3 +1,13 @@
+
+CREATE TABLE IF NOT EXISTS users (
+  id SERIAL PRIMARY KEY,
+  phone_number VARCHAR(12) NOT NULL, 
+  password VARCHAR(255) NOT NULL,
+  name VARCHAR(255) NOT NULL,
+  role VARCHAR(6) NOT NULL DEFAULT 'USER',
+  UNIQUE (phone_number)
+);
+
 CREATE TABLE IF NOT EXISTS employee (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
@@ -11,6 +21,7 @@ CREATE TABLE IF NOT EXISTS employee_email (
     id SERIAL PRIMARY KEY,
     employee_id INT NOT NULL,
     email VARCHAR(255) NOT NULL,
+    UNIQUE (employee_id, email),
     FOREIGN KEY (employee_id) REFERENCES employee(id) ON DELETE CASCADE
 );
 
@@ -18,6 +29,7 @@ CREATE TABLE IF NOT EXISTS employee_phone (
     id SERIAL PRIMARY KEY,
     employee_id INT NOT NULL,
     phone_number VARCHAR(12) NOT NULL,
+    UNIQUE (employee_id, phone_number),
     FOREIGN KEY (employee_id) REFERENCES employee(id) ON DELETE CASCADE
 );
 
@@ -25,6 +37,7 @@ CREATE TABLE IF NOT EXISTS employee_leave (
     id SERIAL PRIMARY KEY,
     employee_id INT NOT NULL,
     leave_date DATE NOT NULL,
+    UNIQUE (employee_id, leave_date),
     FOREIGN KEY (employee_id) REFERENCES employee(id) ON DELETE CASCADE
 );
 
@@ -45,7 +58,7 @@ CREATE TABLE IF NOT EXISTS inventory (
     purchase_date DATE NOT NULL,
     purchase_price DECIMAL(10,2) NOT NULL,
     selling_price DECIMAL(10,2) NOT NULL,
-    condition VARCHAR(50) NOT NULL,
+    damaged_quantity INT NOT NULL DEFAULT 0,
     FOREIGN KEY (dress_id) REFERENCES dress(id) ON DELETE RESTRICT
 );
 
@@ -95,6 +108,7 @@ CREATE TABLE IF NOT EXISTS supplier_phone (
     id SERIAL PRIMARY KEY,
     supplier_id INT NOT NULL,
     phone_number VARCHAR(12) NOT NULL,
+    UNIQUE (supplier_id, phone_number),
     FOREIGN KEY (supplier_id) REFERENCES supplier(id) ON DELETE CASCADE
 );
 
@@ -102,6 +116,7 @@ CREATE TABLE IF NOT EXISTS supplier_email (
     id SERIAL PRIMARY KEY,
     supplier_id INT NOT NULL,
     email VARCHAR(255) NOT NULL,
+    UNIQUE (supplier_id, email),
     FOREIGN KEY (supplier_id) REFERENCES supplier(id) ON DELETE CASCADE
 );
 
@@ -134,7 +149,8 @@ CREATE TABLE IF NOT EXISTS supplier_active_dress_collection (
     id SERIAL PRIMARY KEY,
     supplier_id INT NOT NULL,
     dress_id INT NOT NULL,
-    quantity INT NOT NULL,
+    quality DECIMAL(5, 2) NOT NULL DEFAULT 0,
+    no_of_times_bought DECIMAL(10, 2) NOT NULL DEFAULT 0,
     FOREIGN KEY (supplier_id) REFERENCES supplier(id) ON DELETE CASCADE,
     FOREIGN KEY (dress_id) REFERENCES dress(id) ON DELETE RESTRICT
 );
