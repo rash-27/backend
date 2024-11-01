@@ -3,7 +3,7 @@ package com.dbms.backend.repo.user;
 import org.springframework.stereotype.Repository;
 
 import com.dbms.backend.models.user.User;
-
+import com.dbms.backend.models.user.UserDetails;
 
 import java.util.Optional;
 
@@ -29,9 +29,6 @@ public class UserRepo{
 
   public Boolean addUser(User curr_user){
     try {
-        System.out.println("At repo layer whhile adding");
-        System.out.println("Name "+ curr_user.getName());
-        System.out.println("Pwd "+ curr_user.getPassword());
         String sql = "INSERT INTO users (name, phone_number, password, role) VALUES (?, ?, ?, ?)";
         jdbcTemplate.update(sql, curr_user.getName(), curr_user.getPhone_number(), curr_user.getPassword(), curr_user.getRole().name());
         return true;
@@ -41,4 +38,36 @@ public class UserRepo{
       throw new RuntimeException(e); 
     }
   }
+
+  public Boolean addUserByAdmin(UserDetails user){
+     try {
+        String sql = "INSERT INTO users (name, phone_number, password) VALUES (?, ?, ?)";
+        jdbcTemplate.update(sql, user.name(), user.phone_number(), user.password());
+        return true;
+ 
+    } catch (Exception e) {
+      System.out.println(e);
+      throw new RuntimeException(e); 
+    }
+ 
+  }
+
+
+    public void updateUserDetailsById(int id, String password, String name) {
+        try{
+            String sql = "UPDATE users SET name = ?, password = ? WHERE id = ?";
+            jdbcTemplate.update(sql, name, password, id);
+        }catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void deleteUserByAdmin(int id) {
+        try{
+            String sql = "DELETE FROM users WHERE id = ?";
+            jdbcTemplate.update(sql, id);
+        }catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
