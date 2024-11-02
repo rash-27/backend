@@ -32,7 +32,8 @@ public class AuthenticationService {
         .role(request.getRole())
         .build();
     repository.addUser(user);
-    var jwtToken = jwtService.generateToken(user);
+    var db_user = repository.findByPhone(request.getPhone_number());
+    var jwtToken = jwtService.generateToken(db_user);
     return AuthenticationResponse.builder()
         .token(jwtToken)
         .build();
@@ -50,8 +51,6 @@ public class AuthenticationService {
       System.out.println(e);
     }
     var user = repository.findByPhone(request.getPhone_number());
-    System.out.println("user details ");
-    System.out.println(user);
     var jwtToken = jwtService.generateToken(user);
     return AuthenticationResponse.builder()
         .token(jwtToken)

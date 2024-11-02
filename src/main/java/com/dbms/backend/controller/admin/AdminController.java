@@ -15,6 +15,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.dbms.backend.models.user.UserDetails;
 import com.dbms.backend.models.user.UserDisplayDetails;
 import com.dbms.backend.service.user.UserService;
+import com.dbms.backend.utils.GetTokenInfo;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/admin")
@@ -22,10 +25,14 @@ public class AdminController{
   
     @Autowired
     UserService userService;
+    
+    @Autowired
+    GetTokenInfo getTokenInfo;
 
     @GetMapping("/healthy")
-    public String healthy (){
-      return "Healthy admin";
+    public String healthy (HttpServletRequest request){
+      String id = getTokenInfo.getId(request);
+      return id;
     }
 
 

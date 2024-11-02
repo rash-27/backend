@@ -33,7 +33,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     final String jwt;
     final String userPhone;
     if (authHeader == null ||!authHeader.startsWith("Bearer ")) {
-      System.out.println("No token provided ...");
       filterChain.doFilter(request, response);
       return;
     }
