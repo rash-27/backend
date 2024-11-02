@@ -81,4 +81,13 @@ public class UserRepo{
             throw new RuntimeException(e);
         }
     }
+
+    public UserDisplayDetails getUserById(int id){
+      try{
+        String sql = "SELECT * FROM users WHERE id = ?"; 
+        return jdbcTemplate.query(sql, (rs, rowNum) -> new UserDisplayDetails(rs.getInt("id"), rs.getString("phone_number"), rs.getString("role"), rs.getString("name")), id).stream().findFirst().orElse(null);
+      }catch(Exception e){
+        throw new RuntimeException(e);
+      }
+    }
 }

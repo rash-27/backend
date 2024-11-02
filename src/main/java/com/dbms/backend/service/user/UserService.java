@@ -48,4 +48,12 @@ public class UserService{
         }
     }
 
+    public UserDisplayDetails getUserById(int id){
+      try{
+        return userRepo.getUserById(id);
+      }catch(Exception e){
+      throw new RuntimeException(e);
+    }
+    }
+
 }
