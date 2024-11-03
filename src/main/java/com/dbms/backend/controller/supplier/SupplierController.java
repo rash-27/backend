@@ -11,6 +11,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.dbms.backend.service.supplier.SupplierService;
+import com.dbms.backend.utils.GetTokenInfo;
+
+import jakarta.servlet.http.HttpServletRequest;
+
 import java.util.List;
 
 import com.dbms.backend.models.supplier.SupplierActiveCollection;
@@ -25,20 +29,24 @@ public class SupplierController {
     @Autowired
     SupplierService supplierService;
 
+    @Autowired
+    GetTokenInfo getTokenInfo;
 
     @GetMapping
-    public ResponseEntity<List<SupplierDetails>> getSupplier() {
+    public ResponseEntity<List<SupplierDetails>> getSupplier(HttpServletRequest request) {
         try{
-            return ResponseEntity.ok(supplierService.getSupplier());
+            int user_id = Integer.parseInt(getTokenInfo.getId(request));
+            return ResponseEntity.ok(supplierService.getSupplier(user_id));
         }catch (Exception e) {
             return ResponseEntity.status(500).body(null);
         }
     }
 
     @PostMapping
-    public ResponseEntity<Boolean> addSupplier(@RequestBody SupplierDetails supplierDetails) {
+    public ResponseEntity<Boolean> addSupplier(@RequestBody SupplierDetails supplierDetails, HttpServletRequest request) {
         try{
-            supplierService.addSupplier(supplierDetails);
+            int user_id = Integer.parseInt(getTokenInfo.getId(request));
+            supplierService.addSupplier(supplierDetails, user_id);
             return ResponseEntity.ok(true);
         }catch (Exception e) {
             return ResponseEntity.status(500).body(false);
@@ -46,9 +54,10 @@ public class SupplierController {
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity<Boolean> deleteSupplierById(@PathVariable("id") int id) {
+    public ResponseEntity<Boolean> deleteSupplierById(@PathVariable("id") int id, HttpServletRequest request) {
         try{
-            supplierService.deleteSupplierById(id);
+            int user_id = Integer.parseInt(getTokenInfo.getId(request));
+            supplierService.deleteSupplierById(id, user_id);
             return ResponseEntity.ok(true);
         }catch (Exception e) {
             return ResponseEntity.status(500).body(false);
@@ -56,9 +65,10 @@ public class SupplierController {
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<Boolean> updateSupplierById(@PathVariable("id") int id, @RequestBody SupplierDetails supplierDetails) {
+    public ResponseEntity<Boolean> updateSupplierById(@PathVariable("id") int id, @RequestBody SupplierDetails supplierDetails, HttpServletRequest request) {
         try{
-            supplierService.updateSupplierById(id, supplierDetails);
+            int user_id = Integer.parseInt(getTokenInfo.getId(request));
+            supplierService.updateSupplierById(id, supplierDetails, user_id);
             return ResponseEntity.ok(true);
         }catch (Exception e) {
             return ResponseEntity.status(500).body(false);

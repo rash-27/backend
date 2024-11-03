@@ -7,9 +7,12 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.dbms.backend.models.dresses.DressDetails;
 import com.dbms.backend.models.stock.StockDescription;
+import com.dbms.backend.models.stock.StockDressDescription;
 import com.dbms.backend.models.transaction.CustomerCompleteTransaction;
 import com.dbms.backend.models.transaction.CustomerTransaction;
+import com.dbms.backend.models.transaction.UpdateTransactionInfo;
 
 @Repository
 public class CustomerTransactionRepo {
@@ -49,10 +52,87 @@ public class CustomerTransactionRepo {
         
     }
 
-    public List<CustomerCompleteTransaction> getCustomerTransaction(int user_id){
-      string sql = "SELECT DISTINCT()  FROM users AS u, customers AS c, customer_transaction AS ct, 
-                    inventory_in_cust_transaction AS ict, inventory as i, dress AS d WHERE 
-                    u.id = c.user_id AND c.id = ct.customer_id AND ct.id = ict.customer_transaction_id
-                    AND ict.inventory_id = i.id AND i.dress_id = d.id"; 
+   public void updateCustomerTransaction(int cust_id, int transaction_id, UpdateTransactionInfo transactionInfo){
+    try {
+      String sql = "UPDATE customer_transaction SET amount = ?, transaction_date = ?";
+      jdbcTemplate.update(sql, transactionInfo.amount(), transactionInfo.transaction_date());
+    } catch (Exception e) {
+        throw new RuntimeException(e);
+    }
   }
+    
+ 
+
+
+// Deleting a customer transaction 
+  public void deleteCustomerTransaction(int transaction_id){
+    try {
+      String sql = "DELETE FROM customer_transaction WHERE id = ?";
+      jdbcTemplate.update(sql, transaction_id);
+    } catch (Exception e) {
+        throw new RuntimeException(e);
+    }
+  }
+    
+  public void deleteAllCustomerTransactions(int cust_id){
+    try{
+      String sql = "DELETE FROM customer_transaction WHERE customer_id = ?";
+      jdbcTemplate.update(sql, cust_id);
+    }catch (Exception e){
+      throw new RuntimeException(e);
+    }
+  }
+  
+
+    public List<StockDressDescription> getStockDressDetails(int cust_txn_id){
+    try {
+      String sql = "SELECT DISTINCT ( i.id as id, d.id as dress_id, i.available_quantity as available_quantity, " +
+                  " i.purchase_date as purchase_date, ict.quantity as quantity, i.purchase_price as purchase_price,"+
+                  " i.selling_price as selling_price, i.damaged_quantity as damaged_quantity, " +
+                  " d.name as dress_name, d.brand as dress_brand, d.gender as dress_gender, d.color as dresss_color, "+ 
+                  " d.size as dress_size, d.required_quantity as dress_req_quantity) "+ 
+                  " FROM inventory_in_cust_transaction as ict, inventory as i, dress as d "+
+                  " WHERE ict.customer_transaction_id = ? AND  i.id = ict.inventory_id AND d.id = i.dress_id";
+
+        return jdbcTemplate.query(sql, (rs, rowNum) -> 
+                new StockDressDescription(rs.getInt("id"), rs.getInt("dress_id"), rs.getInt("available_quantity") 
+                , rs.getDate("purchase_date").toLocalDate(), rs.getInt("quantity"), rs.getDouble("purchase_price")
+                , rs.getDouble("selling_price"), rs.getInt("damaged_quantity"),
+                new DressDetails(rs.getInt("dress_id"), rs.getString("dress_name"), rs.getString("dress_brand")
+                , rs.getString("dress_gender"), rs.getString("dress_size"), rs.getString("dress_color")
+                , rs.getInt("dress_req_quantity"))), cust_txn_id);
+
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+    }
+    
+    public List<CustomerCompleteTransaction> getTransactionsOfAllCustomers(int user_id){
+    try {
+      String sql = "SELECT DISTINCT(ct.id as id, c.id as customer_id, ct.transaction_date as transaction_date, ct.amount as amount) "+
+                  " FROM users as u, customer as c, customer_transaction as ct "+
+                  " WHERE u.id = ? AND u.id = c.user_id AND c.id = ct.customer_id";
+
+      return jdbcTemplate.query(sql, (rs, rowNum)-> 
+                          new CustomerCompleteTransaction(rs.getInt("id"), rs.getInt("customer_id")
+                            , rs.getDate("transaction_date").toLocalDate(), rs.getDouble("amount"), getStockDressDetails(rs.getInt("id"))), user_id);
+    } catch (Exception e) {
+        throw new RuntimeException(e);
+    }
+  }
+
+    public List<CustomerCompleteTransaction> getCustomerTransactions(int cust_id){
+    try {
+      String sql = "SELECT DISTINCT(ct.id as id, ct.customer_id as customer_id ,ct.transaction_date as transaction_date, ct.amount as amount) "+
+                  " FROM  customer_transaction as ct "+
+                  " WHERE ct.customer_id = ?";
+
+      return jdbcTemplate.query(sql, (rs, rowNum)-> 
+                          new CustomerCompleteTransaction(rs.getInt("id"), rs.getInt("customer_id")
+                            , rs.getDate("transaction_date").toLocalDate(), rs.getDouble("amount"), getStockDressDetails(rs.getInt("id"))), cust_id);
+    } catch (Exception e) {
+        throw new RuntimeException(e);
+    }
+  }
+
 }

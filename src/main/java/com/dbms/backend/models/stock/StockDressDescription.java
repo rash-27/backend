@@ -3,8 +3,8 @@ package com.dbms.backend.models.stock;
 import java.time.LocalDate;
 
 import com.dbms.backend.models.dresses.DressDetails;
-
-public record StockDressDescription(int id, int dress_id, int available_quantity, LocalDate purchase_date, double purchase_price, double selling_price, int damaged_quantity, DressDetails dressDetails) {
+// id here refers to inventory id 
+public record StockDressDescription(int id, int dress_id, int available_quantity, LocalDate purchase_date, int quantity, double purchase_price, double selling_price, int damaged_quantity, DressDetails dressDetails) {
 
     public StockDressDescription {
         if (purchase_date == null) {
