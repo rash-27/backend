@@ -30,8 +30,8 @@ public class CustomerController {
     @GetMapping
     public ResponseEntity<List<CustomerDetails>> getCustomer(HttpServletRequest request) {
         try{
-            int id = Integer.parseInt(getTokenInfo.getId(request));
-            return ResponseEntity.ok(customerService.getCustomer());
+            int user_id = Integer.parseInt(getTokenInfo.getId(request));
+            return ResponseEntity.ok(customerService.getCustomer(user_id));
         }catch (Exception e) {
             return ResponseEntity.status(500).body(null);
         }
@@ -40,8 +40,8 @@ public class CustomerController {
     @PostMapping
     public ResponseEntity<Boolean> addCustomer(@RequestBody CustomerDetails customerDetails, HttpServletRequest request) {
         try{
-            int id = Integer.parseInt(getTokenInfo.getId(request));
-            customerService.addCustomer(customerDetails);
+            int user_id = Integer.parseInt(getTokenInfo.getId(request));
+            customerService.addCustomer(customerDetails, user_id);
             return ResponseEntity.ok(true);
         }catch (Exception e) {
             return ResponseEntity.status(500).body(false);
@@ -49,10 +49,10 @@ public class CustomerController {
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<Boolean> updateCustomerPoints(@RequestBody CustomerDetails customerDetails, HttpServletRequest request) {
+    public ResponseEntity<Boolean> updateCustomer(@RequestBody CustomerDetails customerDetails, HttpServletRequest request) {
         try{
-            int id = Integer.parseInt(getTokenInfo.getId(request));
-            customerService.updateCustomerPoints(customerDetails.id(), customerDetails);
+            int user_id = Integer.parseInt(getTokenInfo.getId(request));
+            customerService.updateCustomer(customerDetails.id(), customerDetails, user_id);
             return ResponseEntity.ok(true);
         }catch (Exception e) {
             return ResponseEntity.status(500).body(false);

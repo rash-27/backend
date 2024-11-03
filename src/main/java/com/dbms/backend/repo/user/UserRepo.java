@@ -30,6 +30,9 @@ public class UserRepo{
   }
 
   public Boolean addUser(User curr_user){
+    if(curr_user.getRole().name() != "ADMIN" && curr_user.getRole().name() != "USER"){
+      throw new RuntimeException("Role is not valid");
+    }
     try {
         String sql = "INSERT INTO users (name, phone_number, password, role) VALUES (?, ?, ?, ?)";
         jdbcTemplate.update(sql, curr_user.getName(), curr_user.getPhone_number(), curr_user.getPassword(), curr_user.getRole().name());
@@ -76,7 +79,7 @@ public class UserRepo{
     public List<UserDisplayDetails> getUsersDisplay() {
         try{
             String sql = "SELECT * FROM users";
-            return jdbcTemplate.query(sql, (rs, rowNum) -> new UserDisplayDetails(rs.getInt("id"), rs.getString("phone_number"), rs.getString("role"), rs.getString("name")));
+            return jdbcTemplate.query(sql, (rs, rowNum) -> new UserDisplayDetails(rs.getInt("id"), rs.getString("phone_number"), rs.getString("name"), rs.getString("role")));
         }catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -85,7 +88,7 @@ public class UserRepo{
     public UserDisplayDetails getUserById(int id){
       try{
         String sql = "SELECT * FROM users WHERE id = ?"; 
-        return jdbcTemplate.query(sql, (rs, rowNum) -> new UserDisplayDetails(rs.getInt("id"), rs.getString("phone_number"), rs.getString("role"), rs.getString("name")), id).stream().findFirst().orElse(null);
+        return jdbcTemplate.query(sql, (rs, rowNum) -> new UserDisplayDetails(rs.getInt("id"), rs.getString("phone_number"), rs.getString("name"), rs.getString("role")), id).stream().findFirst().orElse(null);
       }catch(Exception e){
         throw new RuntimeException(e);
       }

@@ -22,12 +22,23 @@ public class AuthenticationController {
   public ResponseEntity<AuthenticationResponse> register(
       @RequestBody RegisterRequest request
   ) {
+    try{
+    System.out.println("Request Body");
+    System.out.println(request);
     return ResponseEntity.ok(service.register(request));
+    }catch(Exception err){
+      System.out.println(err);
+    return ResponseEntity.status(500).body(null);
+    }
   }
   @PostMapping("/authenticate")
   public ResponseEntity<AuthenticationResponse> authenticate(
       @RequestBody AuthenticationRequest request
   ) {
-    return ResponseEntity.ok(service.authenticate(request));
+    try{
+      return ResponseEntity.ok(service.authenticate(request));
+    }catch(Exception e){
+      return ResponseEntity.status(403).body(null);
+    }
   }
 }

@@ -12,25 +12,25 @@ public class CustomerService {
     @Autowired
     CustomerRepo customerRepo;
 
-    public List<CustomerDetails> getCustomer() {
+    public List<CustomerDetails> getCustomer(int user_id) {
         try{
-            return customerRepo.getCustomer();
+            return customerRepo.getCustomer(user_id);
         }catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    public void addCustomer(CustomerDetails customerDetails) {
+    public void addCustomer(CustomerDetails customerDetails, int user_id) {
         try{
-            customerRepo.addCustomer(customerDetails);
+            customerRepo.addCustomer(customerDetails, user_id);
         }catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    public void updateCustomerPoints(int id, CustomerDetails customerDetails) {
+    public void updateCustomer(int id, CustomerDetails customerDetails, int user_id) {
         try{
-            customerRepo.updateCustomerPoints(id, customerDetails);
+            customerRepo.updateCustomer(id, customerDetails, user_id);
         }catch (Exception e) {
             throw new RuntimeException(e);
         }

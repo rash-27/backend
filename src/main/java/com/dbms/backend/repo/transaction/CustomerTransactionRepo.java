@@ -1,11 +1,14 @@
 package com.dbms.backend.repo.transaction;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dbms.backend.models.stock.StockDescription;
+import com.dbms.backend.models.transaction.CustomerCompleteTransaction;
 import com.dbms.backend.models.transaction.CustomerTransaction;
 
 @Repository
@@ -45,4 +48,11 @@ public class CustomerTransactionRepo {
         }
         
     }
+
+    public List<CustomerCompleteTransaction> getCustomerTransaction(int user_id){
+      string sql = "SELECT DISTINCT()  FROM users AS u, customers AS c, customer_transaction AS ct, 
+                    inventory_in_cust_transaction AS ict, inventory as i, dress AS d WHERE 
+                    u.id = c.user_id AND c.id = ct.customer_id AND ct.id = ict.customer_transaction_id
+                    AND ict.inventory_id = i.id AND i.dress_id = d.id"; 
+  }
 }
