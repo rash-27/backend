@@ -35,4 +35,12 @@ public class CustomerService {
             throw new RuntimeException(e);
         }
     }
+
+    public void deleteCustomerById(int cust_id, int user_id) {
+        try{
+            customerRepo.deleteCustomerById(cust_id, user_id);
+        }catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

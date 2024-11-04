@@ -23,7 +23,7 @@ public class CustomerTransactionRepo {
     }
 
     @Transactional
-    public void addCustomerTransaction(CustomerTransaction customerTransaction) {
+    public void addCustomerTransaction(CustomerTransaction customerTransaction, int user_id) {
         try{
             // Adding in Customer Transaction
             String custSql = "INSERT INTO customer_transaction (customer_id, transaction_date, amount) VALUES (?, ?, ?)";
@@ -51,7 +51,7 @@ public class CustomerTransactionRepo {
         
     }
   // Updating a customer transaction
-   public void updateCustomerTransaction(int cust_id, int transaction_id, UpdateTransactionInfo transactionInfo){
+   public void updateCustomerTransactionById(int cust_id, int transaction_id, UpdateTransactionInfo transactionInfo){
     try {
       String sql = "UPDATE customer_transaction SET amount = ?, transaction_date = ?";
       jdbcTemplate.update(sql, transactionInfo.amount(), transactionInfo.transaction_date());
@@ -59,7 +59,7 @@ public class CustomerTransactionRepo {
         throw new RuntimeException(e);
     }
   }
-// Delete an inventory bouhht by customer from the inventory list
+// Delete an inventory bouhht by customer from the inventory list  -- No NEED 
    public void deleteInventoryOfCustomer(int cust_id, int inv_id){
     try {
       String sql = "DELETE FROM inventory_bought_by_customer where inventory_id = ?, customer_id = ?";
@@ -97,16 +97,17 @@ public class CustomerTransactionRepo {
 
 
 // Deleting a customer transaction 
-  public void deleteCustomerTransaction(int transaction_id){
+  public void deleteCustomerTransactionById(int cust_id, int transaction_id, int user_id){
     try {
-      String sql = "DELETE FROM customer_transaction WHERE id = ?";
-      jdbcTemplate.update(sql, transaction_id);
+      String sql = "DELETE FROM customer_transaction WHERE id = ? AND customer_id = ?";
+      jdbcTemplate.update(sql, transaction_id, cust_id);
     } catch (Exception e) {
         throw new RuntimeException(e);
     }
   }
-    
-  public void deleteAllCustomerTransactions(int cust_id){
+
+  // Delete customer transactions 
+  public void deleteAllCustomerTransaction(int cust_id, int user_id){
     try{
       String sql = "DELETE FROM customer_transaction WHERE customer_id = ?";
       jdbcTemplate.update(sql, cust_id);
@@ -153,7 +154,7 @@ public class CustomerTransactionRepo {
     }
   }
 
-    public List<CustomerCompleteTransaction> getCustomerTransactions(int cust_id){
+    public List<CustomerCompleteTransaction> getCompleteCustomerTransactions(int cust_id){
     try {
       String sql = "SELECT DISTINCT(ct.id as id, ct.customer_id as customer_id ,ct.transaction_date as transaction_date, ct.amount as amount) "+
                   " FROM  customer_transaction as ct "+
