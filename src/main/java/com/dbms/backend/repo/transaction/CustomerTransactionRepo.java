@@ -2,7 +2,6 @@ package com.dbms.backend.repo.transaction;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,7 +50,7 @@ public class CustomerTransactionRepo {
         }
         
     }
-
+  // Updating a customer transaction
    public void updateCustomerTransaction(int cust_id, int transaction_id, UpdateTransactionInfo transactionInfo){
     try {
       String sql = "UPDATE customer_transaction SET amount = ?, transaction_date = ?";
@@ -60,8 +59,41 @@ public class CustomerTransactionRepo {
         throw new RuntimeException(e);
     }
   }
-    
- 
+// Delete an inventory bouhht by customer from the inventory list
+   public void deleteInventoryOfCustomer(int cust_id, int inv_id){
+    try {
+      String sql = "DELETE FROM inventory_bought_by_customer where inventory_id = ?, customer_id = ?";
+      jdbcTemplate.update(sql, inv_id, cust_id);
+    } catch (Exception e) {
+        throw new RuntimeException(e);
+    }
+  }
+
+
+ // Getting the incentory bought by customer
+  public List<StockDressDescription> inventoryOfCustomer(int cust_id){
+    try {
+      String sql = "SELECT DISTINCT ( i.id as id, d.id as dress_id, i.available_quantity as available_quantity, " +
+                  " i.purchase_date as purchase_date, ict.quantity as quantity, i.purchase_price as purchase_price,"+
+                  " i.selling_price as selling_price, i.damaged_quantity as damaged_quantity, " +
+                  " d.name as dress_name, d.brand as dress_brand, d.gender as dress_gender, d.color as dresss_color, "+ 
+                  " d.size as dress_size, d.required_quantity as dress_req_quantity) "+ 
+                  " FROM inventory_bought_by_customer as ibc, inventory as i, dress as d "+
+                  " WHERE ibc.customer_id = ? AND  i.id = ibc.inventory_id AND d.id = i.dress_id";
+
+        return jdbcTemplate.query(sql, (rs, rowNum) -> 
+                new StockDressDescription(rs.getInt("id"), rs.getInt("dress_id"), rs.getInt("available_quantity") 
+                , rs.getDate("purchase_date").toLocalDate(), rs.getInt("quantity"), rs.getDouble("purchase_price")
+                , rs.getDouble("selling_price"), rs.getInt("damaged_quantity"),
+                new DressDetails(rs.getInt("dress_id"), rs.getString("dress_name"), rs.getString("dress_brand")
+                , rs.getString("dress_gender"), rs.getString("dress_size"), rs.getString("dress_color")
+                , rs.getInt("dress_req_quantity"))), cust_id);
+
+    } catch (Exception e) {
+        throw new RuntimeException(e);
+    }
+  }
+
 
 
 // Deleting a customer transaction 

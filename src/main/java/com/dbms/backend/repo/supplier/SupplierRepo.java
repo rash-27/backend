@@ -46,10 +46,10 @@ public class SupplierRepo {
         }
     }
 
-    public List<SupplierDetails> getSupplier() {
+    public List<SupplierDetails> getSupplier(int user_id) {
         try{
-            String sql = "SELECT * FROM supplier";
-            return jdbcTemplate.query(sql, new SupplierDetailsRowMapper());
+            String sql = "SELECT * FROM supplier WHERE user_id = ?";
+            return jdbcTemplate.query(sql, new SupplierDetailsRowMapper(), user_id);
         }catch(Exception e){
             throw new RuntimeException(e);
         }
