@@ -35,6 +35,7 @@ public class SecurityConfiguration {
                     req.requestMatchers(WHITE_LIST_URL)
                         .permitAll()
                         .requestMatchers("/admin/**").hasAuthority("ADMIN")
+                        .requestMatchers("/").authenticated()
                         .anyRequest().hasAuthority("USER");
              
             }
