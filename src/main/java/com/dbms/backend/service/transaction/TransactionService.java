@@ -69,6 +69,14 @@ public class TransactionService{
       }
   }
 
+    public List<StockDressDescription>  getAllInventory(int user_id){
+      try {
+        return customerTransactionRepo.getAllInventory(user_id);
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      }
+  }
+
 
  // Getting transactions of all customers of a user
 

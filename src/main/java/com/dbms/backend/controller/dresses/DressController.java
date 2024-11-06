@@ -11,12 +11,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.dbms.backend.service.dresses.DressService;
+import com.dbms.backend.service.transaction.TransactionService;
 import com.dbms.backend.utils.GetTokenInfo;
 
 import jakarta.servlet.http.HttpServletRequest;
 
 import com.dbms.backend.models.dresses.DressDetails;
 import com.dbms.backend.models.stock.StockDescription;
+import com.dbms.backend.models.stock.StockDressDescription;
 
 import java.util.List;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +32,9 @@ public class DressController {
     DressService dressService;
     @Autowired
     GetTokenInfo getTokenInfo;
+
+    @Autowired
+    TransactionService transactionService;
 
     @GetMapping
     public ResponseEntity<List<DressDetails>> getDress(HttpServletRequest request) {
@@ -73,6 +78,16 @@ public class DressController {
             return ResponseEntity.status(500).body(false);
         }
     }   
+
+    @GetMapping("/stock")
+    public ResponseEntity<List<StockDressDescription>> getAllInventory(HttpServletRequest request) {
+        try{
+            int user_id = Integer.parseInt(getTokenInfo.getId(request));
+            return ResponseEntity.ok(transactionService.getAllInventory(user_id));
+        }catch (Exception e) {
+            return ResponseEntity.status(500).body(null);
+        }
+    }
 
 
     @GetMapping("/{id}/stock")

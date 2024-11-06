@@ -95,6 +95,32 @@ public class CustomerTransactionRepo {
   }
 
 
+  // Get all inentory with the dress names 
+
+  public List<StockDressDescription> getAllInventory(int user_id){
+    try {
+      String sql = "SELECT DISTINCT i.id as id, d.id as dress_id, i.available_quantity as available_quantity, "+
+                  " i.purchase_date as purchase_date, i.purchase_price as purchase_price, " +
+                  " i.selling_price as selling_price, i.damaged_quantity as damaged_quantity, "+
+                  " d.name as dress_name, d.brand as dress_brand, d.gender as dress_gender, d.color as dress_color, "+ 
+                  " d.size as dress_size, d.required_quantity as dress_req_quantity "+ 
+                  " FROM inventory as i, dress as d"+
+                  " WHERE i.dress_id = d.id AND d.user_id = ?";
+
+        return jdbcTemplate.query(sql, (rs, rowNum) -> 
+                new StockDressDescription(rs.getInt("id"), rs.getInt("dress_id"), rs.getInt("available_quantity") 
+                , rs.getDate("purchase_date").toLocalDate(), 0, rs.getDouble("purchase_price")
+                , rs.getDouble("selling_price"), rs.getInt("damaged_quantity"),
+                new DressDetails(rs.getInt("dress_id"), rs.getString("dress_name"), rs.getString("dress_brand")
+                , rs.getString("dress_gender"), rs.getString("dress_size"), rs.getString("dress_color")
+                , rs.getInt("dress_req_quantity"))), user_id);
+
+    } catch (Exception e) {
+        System.out.println(e);
+        throw new RuntimeException(e);
+    }
+  }
+
 
 // Deleting a customer transaction 
   public void deleteCustomerTransactionById(int cust_id, int transaction_id, int user_id){
