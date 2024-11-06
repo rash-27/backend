@@ -73,11 +73,11 @@ public class CustomerTransactionRepo {
  // Getting the incentory bought by customer
   public List<StockDressDescription> inventoryOfCustomer(int cust_id){
     try {
-      String sql = "SELECT DISTINCT ( i.id as id, d.id as dress_id, i.available_quantity as available_quantity, " +
+      String sql = "SELECT DISTINCT i.id as id, d.id as dress_id, i.available_quantity as available_quantity, " +
                   " i.purchase_date as purchase_date, i.purchase_price as purchase_price,"+
                   " i.selling_price as selling_price, i.damaged_quantity as damaged_quantity, " +
                   " d.name as dress_name, d.brand as dress_brand, d.gender as dress_gender, d.color as dresss_color, "+ 
-                  " d.size as dress_size, d.required_quantity as dress_req_quantity) "+ 
+                  " d.size as dress_size, d.required_quantity as dress_req_quantity "+ 
                   " FROM inventory_bought_by_customer as ibc, inventory as i, dress as d "+
                   " WHERE ibc.customer_id = ? AND  i.id = ibc.inventory_id AND d.id = i.dress_id";
 
@@ -119,11 +119,11 @@ public class CustomerTransactionRepo {
 
     public List<StockDressDescription> getStockDressDetails(int cust_txn_id){
     try {
-      String sql = "SELECT DISTINCT ( i.id as id, d.id as dress_id, i.available_quantity as available_quantity, " +
+      String sql = "SELECT DISTINCT i.id as id, d.id as dress_id, i.available_quantity as available_quantity, " +
                   " i.purchase_date as purchase_date, ict.quantity as quantity, i.purchase_price as purchase_price,"+
                   " i.selling_price as selling_price, i.damaged_quantity as damaged_quantity, " +
                   " d.name as dress_name, d.brand as dress_brand, d.gender as dress_gender, d.color as dresss_color, "+ 
-                  " d.size as dress_size, d.required_quantity as dress_req_quantity) "+ 
+                  " d.size as dress_size, d.required_quantity as dress_req_quantity "+ 
                   " FROM inventory_in_cust_transaction as ict, inventory as i, dress as d "+
                   " WHERE ict.customer_transaction_id = ? AND  i.id = ict.inventory_id AND d.id = i.dress_id";
 
@@ -142,7 +142,7 @@ public class CustomerTransactionRepo {
     
     public List<CustomerCompleteTransaction> getTransactionsOfAllCustomers(int user_id){
     try {
-      String sql = "SELECT DISTINCT(ct.id as id, c.id as customer_id, ct.transaction_date as transaction_date, ct.amount as amount) "+
+      String sql = "SELECT DISTINCT ct.id as id, c.id as customer_id, ct.transaction_date as transaction_date, ct.amount as amount "+
                   " FROM users as u, customer as c, customer_transaction as ct "+
                   " WHERE u.id = ? AND u.id = c.user_id AND c.id = ct.customer_id";
 
@@ -156,7 +156,7 @@ public class CustomerTransactionRepo {
 
     public List<CustomerCompleteTransaction> getCompleteCustomerTransactions(int cust_id){
     try {
-      String sql = "SELECT DISTINCT(ct.id as id, ct.customer_id as customer_id ,ct.transaction_date as transaction_date, ct.amount as amount) "+
+      String sql = "SELECT DISTINCT ct.id as id, ct.customer_id as customer_id ,ct.transaction_date as transaction_date, ct.amount as amount "+
                   " FROM  customer_transaction as ct "+
                   " WHERE ct.customer_id = ?";
 
