@@ -9,8 +9,5 @@ public record UserDetails(int id, String phone_number, String password, String r
         if (phone_number == null || phone_number.isBlank()) {
             throw new IllegalArgumentException("Phone Number cannot be null or empty");
         }
-        if (role == null || role.isBlank()) {
-            throw new IllegalArgumentException("Role cannot be null or empty");
-        }
   }
 }
