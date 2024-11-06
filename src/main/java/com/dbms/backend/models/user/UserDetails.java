@@ -12,10 +12,5 @@ public record UserDetails(int id, String phone_number, String password, String r
         if (role == null || role.isBlank()) {
             throw new IllegalArgumentException("Role cannot be null or empty");
         }
-        if (password == null || password.isBlank()) {
-            throw new IllegalArgumentException("Password cannot be null or empty");
-        }
-
-   
   }
 }

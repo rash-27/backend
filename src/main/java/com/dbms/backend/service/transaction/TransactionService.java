@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 
 import com.dbms.backend.models.transaction.CustomerCompleteTransaction;
 import com.dbms.backend.models.transaction.CustomerTransaction;
+import com.dbms.backend.models.transaction.SupplierCompleteTransaction;
+import com.dbms.backend.models.transaction.SupplierTransaction;
 import com.dbms.backend.models.transaction.UpdateTransactionInfo;
 import com.dbms.backend.repo.transaction.CustomerTransactionRepo;
 import com.dbms.backend.repo.transaction.SupplierTransactionRepo;
@@ -18,7 +20,7 @@ public class TransactionService{
   CustomerTransactionRepo customerTransactionRepo;
 
   @Autowired
-  SupplierTransactionRepo supplierTransanctionRepo;
+  SupplierTransactionRepo supplierTransactionRepo;
 
   // Customer 
 
@@ -87,4 +89,69 @@ public class TransactionService{
     }
   }
 
+  // Suplier 
+  // Add a supplier transaciton
+    public void addSupplierTransaction(SupplierTransaction supplierTransaction, int user_id) {
+        try{
+            supplierTransactionRepo.addSupplierTransaction(supplierTransaction, user_id);;
+        }catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+  // Delete a supplier transaction
+    public void deleteSupplierTransactionById(int supp_id, int trans_id, int user_id) {
+        try{
+            supplierTransactionRepo.deleteSupplierTransactionById(supp_id, trans_id, user_id);
+        }catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+  
+  // Delete all supplier transactions
+
+     public void deleteAllSupplierTransaction(int supp_id, int user_id) {
+        try{
+            supplierTransactionRepo.deleteAllSupplierTransaction(supp_id, user_id);
+        }catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+  // Update supplier transaction
+    public void updateSupplierTransactionById(int supp_id, int trans_id, UpdateTransactionInfo transactionInfo) {
+        try{
+            supplierTransactionRepo.updateSupplierTransactionById(supp_id, trans_id, transactionInfo);
+        }catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+   // Getting inventory of supplier  
+    public List<StockDressDescription>  inventoryOfSupplier(int supp_id){
+      try {
+        return supplierTransactionRepo.inventoryOfSupplier(supp_id);
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      }
+  }
+
+
+ // Getting transactions of all customers of a user
+
+    public List<SupplierCompleteTransaction> getTransactionsOfAllSuppliers(int user_id){
+    try {
+      return supplierTransactionRepo.getTransactionsOfAllSuppliers(user_id);
+    } catch (Exception e) {
+        throw new RuntimeException(e);
+    }
+  }
+  // Get complete info of customer transactions 
+    public List<SupplierCompleteTransaction> getCompleteSupplierTransactions(int supp_id){
+    try {
+     return supplierTransactionRepo.getCompleteSupplierTransactions(supp_id);
+
+    } catch (Exception e) {
+        throw new RuntimeException(e);
+    }
+  }
 }

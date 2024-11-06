@@ -2,10 +2,17 @@ package com.dbms.backend.repo.transaction;
 
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
 import org.springframework.jdbc.core.JdbcTemplate;
 
+import com.dbms.backend.models.dresses.DressDetails;
 import com.dbms.backend.models.stock.StockDescriptionSupplier;
+import com.dbms.backend.models.stock.StockDressDescription;
+import com.dbms.backend.models.transaction.SupplierCompleteTransaction;
 import com.dbms.backend.models.transaction.SupplierTransaction;
+import com.dbms.backend.models.transaction.UpdateTransactionInfo;
 
 @Repository
 public class SupplierTransactionRepo {
@@ -16,7 +23,7 @@ public class SupplierTransactionRepo {
     }
 
     @Transactional
-    public void addSupplierTransaction(SupplierTransaction supplierTransaction) {
+    public void addSupplierTransaction(SupplierTransaction supplierTransaction, int user_id) {
         try {
             // Add in Supplier Transaction
             String supplier_transaction = "INSERT INTO supplier_transaction (supplier_id, transaction_date, amount) VALUES (?, ?, ?)";
@@ -59,5 +66,121 @@ public class SupplierTransactionRepo {
     }
 
 
+   public void updateSupplierTransactionById(int supp_id, int transaction_id, UpdateTransactionInfo transactionInfo){
+    try {
+      String sql = "UPDATE supplier_transaction SET amount = ?, transaction_date = ? WHERE id = ?";
+      jdbcTemplate.update(sql, transactionInfo.amount(), transactionInfo.transaction_date(), transaction_id);
+    } catch (Exception e) {
+        throw new RuntimeException(e);
+    }
+  }
+// Delete an inventory bouhht by supplier from the inventory list  -- No NEED 
+   public void deleteInventoryOfSupplier(int supp_id, int inv_id){
+    try {
+      String sql = "DELETE FROM inventory_bought_from_supplier WHERE inventory_id = ?, supplier_id = ?";
+      jdbcTemplate.update(sql, inv_id, supp_id);
+    } catch (Exception e) {
+        throw new RuntimeException(e);
+    }
+  }
+
+
+ // Getting the incentory bought by supplier 
+  public List<StockDressDescription> inventoryOfSupplier(int supp_id){
+    try {
+      String sql = "SELECT DISTINCT ( i.id as id, d.id as dress_id, i.available_quantity as available_quantity, " +
+                  " i.purchase_date as purchase_date, i.purchase_price as purchase_price,"+
+                  " i.selling_price as selling_price, i.damaged_quantity as damaged_quantity, " +
+                  " d.name as dress_name, d.brand as dress_brand, d.gender as dress_gender, d.color as dresss_color, "+ 
+                  " d.size as dress_size, d.required_quantity as dress_req_quantity) "+ 
+                  " FROM inventory_bought_by_supplier as ibs, inventory as i, dress as d "+
+                  " WHERE ibs.supplier_id = ? AND  i.id = ibs.inventory_id AND d.id = i.dress_id";
+
+        return jdbcTemplate.query(sql, (rs, rowNum) -> 
+                new StockDressDescription(rs.getInt("id"), rs.getInt("dress_id"), rs.getInt("available_quantity") 
+                , rs.getDate("purchase_date").toLocalDate(), 0, rs.getDouble("purchase_price")
+                , rs.getDouble("selling_price"), rs.getInt("damaged_quantity"),
+                new DressDetails(rs.getInt("dress_id"), rs.getString("dress_name"), rs.getString("dress_brand")
+                , rs.getString("dress_gender"), rs.getString("dress_size"), rs.getString("dress_color")
+                , rs.getInt("dress_req_quantity"))), supp_id);
+
+    } catch (Exception e) {
+        throw new RuntimeException(e);
+    }
+  }
+
+
+
+// Deleting a customer transaction 
+  public void deleteSupplierTransactionById(int supp_id, int transaction_id, int user_id){
+    try {
+      String sql = "DELETE FROM supplier_transaction WHERE id = ? AND customer_id = ?";
+      jdbcTemplate.update(sql, transaction_id, supp_id);
+    } catch (Exception e) {
+        throw new RuntimeException(e);
+    }
+  }
+
+  // Delete customer transactions 
+  public void deleteAllSupplierTransaction(int supp_id, int user_id){
+    try{
+      String sql = "DELETE FROM supplier_transaction WHERE supplier_id = ?";
+      jdbcTemplate.update(sql, supp_id);
+    }catch (Exception e){
+      throw new RuntimeException(e);
+    }
+  }
+
+
+    public List<StockDressDescription> getStockDressDetails(int supp_txn_id){
+    try {
+      String sql = "SELECT DISTINCT ( i.id as id, d.id as dress_id, i.available_quantity as available_quantity, " +
+                  " i.purchase_date as purchase_date, ist.quantity as quantity, i.purchase_price as purchase_price,"+
+                  " i.selling_price as selling_price, i.damaged_quantity as damaged_quantity, " +
+                  " d.name as dress_name, d.brand as dress_brand, d.gender as dress_gender, d.color as dresss_color, "+ 
+                  " d.size as dress_size, d.required_quantity as dress_req_quantity) "+ 
+                  " FROM inventory_in_supplier_transaction as ist, inventory as i, dress as d "+
+                  " WHERE ist.supplier_transaction_id = ? AND  i.id = ist.inventory_id AND d.id = i.dress_id";
+
+        return jdbcTemplate.query(sql, (rs, rowNum) -> 
+                new StockDressDescription(rs.getInt("id"), rs.getInt("dress_id"), rs.getInt("available_quantity") 
+                , rs.getDate("purchase_date").toLocalDate(), rs.getInt("quantity"), rs.getDouble("purchase_price")
+                , rs.getDouble("selling_price"), rs.getInt("damaged_quantity"),
+                new DressDetails(rs.getInt("dress_id"), rs.getString("dress_name"), rs.getString("dress_brand")
+                , rs.getString("dress_gender"), rs.getString("dress_size"), rs.getString("dress_color")
+                , rs.getInt("dress_req_quantity"))), supp_txn_id);
+
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+    }
+    
+    public List<SupplierCompleteTransaction> getTransactionsOfAllSuppliers(int user_id){
+    try {
+      String sql = "SELECT DISTINCT(st.id as id, s.id as supplier_id, st.transaction_date as transaction_date, st.amount as amount) "+
+                  " FROM users as u, supplier as s, supplier_transaction as st "+
+                  " WHERE u.id = ? AND u.id = s.user_id AND s.id = st.supplier_id";
+
+      return jdbcTemplate.query(sql, (rs, rowNum)-> 
+                          new SupplierCompleteTransaction(rs.getInt("id"), rs.getInt("supplier_id")
+                            , rs.getDate("transaction_date").toLocalDate(), rs.getDouble("amount"), getStockDressDetails(rs.getInt("id"))), user_id);
+    } catch (Exception e) {
+        throw new RuntimeException(e);
+    }
+  }
+
+    public List<SupplierCompleteTransaction> getCompleteSupplierTransactions(int supp_id){
+    try {
+      String sql = "SELECT DISTINCT(st.id as id, st.supplier_id as supplier_id ,st.transaction_date as transaction_date, st.amount as amount) "+
+                  " FROM  supplier_transaction as st "+
+                  " WHERE st.supplier_id = ?";
+
+      return jdbcTemplate.query(sql, (rs, rowNum)-> 
+                          new SupplierCompleteTransaction(rs.getInt("id"), rs.getInt("supplier_id")
+                            , rs.getDate("transaction_date").toLocalDate(), rs.getDouble("amount"), getStockDressDetails(rs.getInt("id"))), supp_id);
+    } catch (Exception e) {
+        throw new RuntimeException(e);
+    }
+  }
 
 }

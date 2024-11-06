@@ -26,7 +26,6 @@ public class CustomerRepo {
 
     public void addCustomer(CustomerDetails customerDetails, int user_id) {
         try{
-            System.out.println("CustomerDetails");
             System.out.println(customerDetails);
             String sql = "INSERT INTO customer (name, address, email, phone_number, points, user_id) VALUES (?, ?, ?, ?, ?, ?)";
             jdbcTemplate.update(sql, customerDetails.name(), customerDetails.address(), customerDetails.email(), customerDetails.phone_number(), customerDetails.points(), user_id);
@@ -37,6 +36,7 @@ public class CustomerRepo {
 
     public void updateCustomer(int id, CustomerDetails customerDetails, int user_id) {
         try{
+            System.out.println(customerDetails);
             String sql = "UPDATE customer SET name = ?, address = ?, email = ?, phone_number = ?, points = ? WHERE id = ? AND user_id = ?";
             jdbcTemplate.update(sql,customerDetails.name(), customerDetails.address(), customerDetails.email(), customerDetails.phone_number(), customerDetails.points() , id, user_id);
         }catch (Exception e) {

@@ -53,8 +53,8 @@ public class CustomerTransactionRepo {
   // Updating a customer transaction
    public void updateCustomerTransactionById(int cust_id, int transaction_id, UpdateTransactionInfo transactionInfo){
     try {
-      String sql = "UPDATE customer_transaction SET amount = ?, transaction_date = ?";
-      jdbcTemplate.update(sql, transactionInfo.amount(), transactionInfo.transaction_date());
+      String sql = "UPDATE customer_transaction SET amount = ?, transaction_date = ? WHERE id = ?";
+      jdbcTemplate.update(sql, transactionInfo.amount(), transactionInfo.transaction_date(), transaction_id);
     } catch (Exception e) {
         throw new RuntimeException(e);
     }
@@ -74,7 +74,7 @@ public class CustomerTransactionRepo {
   public List<StockDressDescription> inventoryOfCustomer(int cust_id){
     try {
       String sql = "SELECT DISTINCT ( i.id as id, d.id as dress_id, i.available_quantity as available_quantity, " +
-                  " i.purchase_date as purchase_date, ict.quantity as quantity, i.purchase_price as purchase_price,"+
+                  " i.purchase_date as purchase_date, i.purchase_price as purchase_price,"+
                   " i.selling_price as selling_price, i.damaged_quantity as damaged_quantity, " +
                   " d.name as dress_name, d.brand as dress_brand, d.gender as dress_gender, d.color as dresss_color, "+ 
                   " d.size as dress_size, d.required_quantity as dress_req_quantity) "+ 
@@ -83,7 +83,7 @@ public class CustomerTransactionRepo {
 
         return jdbcTemplate.query(sql, (rs, rowNum) -> 
                 new StockDressDescription(rs.getInt("id"), rs.getInt("dress_id"), rs.getInt("available_quantity") 
-                , rs.getDate("purchase_date").toLocalDate(), rs.getInt("quantity"), rs.getDouble("purchase_price")
+                , rs.getDate("purchase_date").toLocalDate(), 0, rs.getDouble("purchase_price")
                 , rs.getDouble("selling_price"), rs.getInt("damaged_quantity"),
                 new DressDetails(rs.getInt("dress_id"), rs.getString("dress_name"), rs.getString("dress_brand")
                 , rs.getString("dress_gender"), rs.getString("dress_size"), rs.getString("dress_color")
@@ -115,7 +115,7 @@ public class CustomerTransactionRepo {
       throw new RuntimeException(e);
     }
   }
-  
+
 
     public List<StockDressDescription> getStockDressDetails(int cust_txn_id){
     try {

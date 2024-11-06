@@ -9,12 +9,15 @@ import com.dbms.backend.models.user.UserDisplayDetails;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+
 import com.dbms.backend.repo.user.UserRowMapper;
 
 @Repository
 public class UserRepo{
      private JdbcTemplate jdbcTemplate;
+
 
     UserRepo(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -58,10 +61,20 @@ public class UserRepo{
   }
 
 
-    public void updateUserDetailsById(int id, String password, String name) {
+    public void updateUserNameById(int id, String name) {
         try{
-            String sql = "UPDATE users SET name = ?, password = ? WHERE id = ?";
-            jdbcTemplate.update(sql, name, password, id);
+            String sql = "UPDATE users SET name = ? WHERE id = ?";
+            jdbcTemplate.update(sql, name, id);
+        }catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void updateUserPasswordById(int id, String password) {
+        try{
+            String sql = "UPDATE users SET password = ? WHERE id = ?";
+            System.out.println("hashed Password "+ password);
+            jdbcTemplate.update(sql, password, id);
         }catch (Exception e) {
             throw new RuntimeException(e);
         }
