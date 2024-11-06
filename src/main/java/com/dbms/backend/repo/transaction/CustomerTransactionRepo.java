@@ -76,7 +76,7 @@ public class CustomerTransactionRepo {
       String sql = "SELECT DISTINCT i.id as id, d.id as dress_id, i.available_quantity as available_quantity, " +
                   " i.purchase_date as purchase_date, i.purchase_price as purchase_price,"+
                   " i.selling_price as selling_price, i.damaged_quantity as damaged_quantity, " +
-                  " d.name as dress_name, d.brand as dress_brand, d.gender as dress_gender, d.color as dresss_color, "+ 
+                  " d.name as dress_name, d.brand as dress_brand, d.gender as dress_gender, d.color as dress_color, "+ 
                   " d.size as dress_size, d.required_quantity as dress_req_quantity "+ 
                   " FROM inventory_bought_by_customer as ibc, inventory as i, dress as d "+
                   " WHERE ibc.customer_id = ? AND  i.id = ibc.inventory_id AND d.id = i.dress_id";
@@ -122,7 +122,7 @@ public class CustomerTransactionRepo {
       String sql = "SELECT DISTINCT i.id as id, d.id as dress_id, i.available_quantity as available_quantity, " +
                   " i.purchase_date as purchase_date, ict.quantity as quantity, i.purchase_price as purchase_price,"+
                   " i.selling_price as selling_price, i.damaged_quantity as damaged_quantity, " +
-                  " d.name as dress_name, d.brand as dress_brand, d.gender as dress_gender, d.color as dresss_color, "+ 
+                  " d.name as dress_name, d.brand as dress_brand, d.gender as dress_gender, d.color as dress_color, "+ 
                   " d.size as dress_size, d.required_quantity as dress_req_quantity "+ 
                   " FROM inventory_in_cust_transaction as ict, inventory as i, dress as d "+
                   " WHERE ict.customer_transaction_id = ? AND  i.id = ict.inventory_id AND d.id = i.dress_id";

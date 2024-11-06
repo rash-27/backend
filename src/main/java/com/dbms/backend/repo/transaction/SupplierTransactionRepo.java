@@ -30,7 +30,8 @@ public class SupplierTransactionRepo {
             jdbcTemplate.update(supplier_transaction, supplierTransaction.supplier_id(), supplierTransaction.transaction_date(), supplierTransaction.amount());
 
             int id = jdbcTemplate.queryForObject("SELECT MAX(id) FROM supplier_transaction", Integer.class);
-
+            System.out.println("Id of the transaction");
+            System.out.println(id);
             // Updating and adding stock to supplier and inventory to supplier_inventory
 
             for(StockDescriptionSupplier stockDescriptionSupplier : supplierTransaction.StockDescriptionSupplier()) {
@@ -38,26 +39,32 @@ public class SupplierTransactionRepo {
                 // Adding the quality of dress in for a supplier
                 String dressQuality = "UPDATE supplier_active_dress_collection SET quality = (quality * no_of_times_bought + ?) / (no_of_times_bought + 1), no_of_times_bought = no_of_times_bought + 1 WHERE supplier_id = ? AND dress_id = ?";
                 jdbcTemplate.update(dressQuality, stockDescriptionSupplier.quality(), supplierTransaction.supplier_id(), stockDescriptionSupplier.dress_id());
-                // Inventory in supplier transaction
-                String stockSql = "INSERT INTO inventory_in_supplier_transaction (inventory_id, supplier_transaction_id, quantity) VALUES (?, ?, ?)";
-                jdbcTemplate.update(stockSql, stockDescriptionSupplier.id(), id, stockDescriptionSupplier.available_quantity() + stockDescriptionSupplier.damaged_quantity());
-
-                // Inventory bought by supplier
-                String inventory_bought_by_supplier = "INSERT INTO inventory_bought_by_supplier (supplier_id, inventory_id) VALUES (?, ?)";
-                jdbcTemplate.update(inventory_bought_by_supplier, supplierTransaction.supplier_id(), stockDescriptionSupplier.id());
-
                 // Check if stock exists such that same dress id on same date
-                String checkStock = "SELECT * FROM stock WHERE dress_id = ? AND purchase_date = ?";
+                String checkStock = "SELECT * FROM inventory WHERE dress_id = ? AND purchase_date = ?";
                 StockDescriptionSupplier stock = jdbcTemplate.query(checkStock, (rs, rowNum) -> new StockDescriptionSupplier(rs.getInt("id"), rs.getInt("dress_id"), rs.getInt("available_quantity"), rs.getDate("purchase_date").toLocalDate(), rs.getDouble("purchase_price"), rs.getDouble("selling_price"), rs.getInt("damaged_quantity"), 0), stockDescriptionSupplier.dress_id(), stockDescriptionSupplier.purchase_date()).stream().findFirst().orElse(null);
+                int inventory_id;
                 if(stock == null){
                     // Insert new stock
-                    String insertStock = "INSERT INTO stock (dress_id, available_quantity, purchase_date, purchase_price, selling_price, damaged_quantity) VALUES (?, ?, ?, ?, ?, ?)";
+                    String insertStock = "INSERT INTO inventory (dress_id, available_quantity, purchase_date, purchase_price, selling_price, damaged_quantity) VALUES (?, ?, ?, ?, ?, ?)";
                     jdbcTemplate.update(insertStock, stockDescriptionSupplier.dress_id(), stockDescriptionSupplier.available_quantity(), stockDescriptionSupplier.purchase_date(), stockDescriptionSupplier.purchase_price(), stockDescriptionSupplier.selling_price(), stockDescriptionSupplier.damaged_quantity());
+                    inventory_id = jdbcTemplate.queryForObject("SELECT MAX(id) FROM inventory", Integer.class);
                 }else {
                     // Update stock
-                    String updateStock = "UPDATE stock SET available_quantity = available_quantity + ?, damaged_quantity = damaged_quantity + ? WHERE id = ?";
+                    String updateStock = "UPDATE inventory SET available_quantity = available_quantity + ?, damaged_quantity = damaged_quantity + ? WHERE id = ?";
                     jdbcTemplate.update(updateStock, stockDescriptionSupplier.available_quantity(), stockDescriptionSupplier.damaged_quantity(), stock.id());
+                    inventory_id = stock.id(); 
                 }
+                System.out.println("inventory_id");
+                System.out.println(inventory_id);
+                // Inventory in supplier transaction
+                String stockSql = "INSERT INTO inventory_in_supplier_transaction (inventory_id, supplier_transaction_id, quantity) VALUES (?, ?, ?)";
+                jdbcTemplate.update(stockSql, inventory_id, id, stockDescriptionSupplier.available_quantity() + stockDescriptionSupplier.damaged_quantity());
+
+                // Inventory bought by supplier
+                String inventory_bought_by_supplier = "INSERT INTO inventory_bought_from_supplier (supplier_id, inventory_id) VALUES (?, ?)";
+                jdbcTemplate.update(inventory_bought_by_supplier, supplierTransaction.supplier_id(), inventory_id);
+
+
             }
 
         } catch (Exception e) {
@@ -93,7 +100,7 @@ public class SupplierTransactionRepo {
                   " i.selling_price as selling_price, i.damaged_quantity as damaged_quantity, " +
                   " d.name as dress_name, d.brand as dress_brand, d.gender as dress_gender, d.color as dresss_color, "+ 
                   " d.size as dress_size, d.required_quantity as dress_req_quantity "+ 
-                  " FROM inventory_bought_by_supplier as ibs, inventory as i, dress as d "+
+                  " FROM inventory_bought_from_supplier as ibs, inventory as i, dress as d "+
                   " WHERE ibs.supplier_id = ? AND  i.id = ibs.inventory_id AND d.id = i.dress_id";
 
         return jdbcTemplate.query(sql, (rs, rowNum) -> 
@@ -134,12 +141,12 @@ public class SupplierTransactionRepo {
 
     public List<StockDressDescription> getStockDressDetails(int supp_txn_id){
     try {
-      String sql = "SELECT DISTINCT i.id as id, d.id as dress_id, i.available_quantity as available_quantity, " +
-                  " i.purchase_date as purchase_date, ist.quantity as quantity, i.purchase_price as purchase_price,"+
-                  " i.selling_price as selling_price, i.damaged_quantity as damaged_quantity, " +
-                  " d.name as dress_name, d.brand as dress_brand, d.gender as dress_gender, d.color as dresss_color, "+ 
-                  " d.size as dress_size, d.required_quantity as dress_req_quantity "+ 
-                  " FROM inventory_in_supplier_transaction as ist, inventory as i, dress as d "+
+      String sql = "SELECT DISTINCT i.id AS id, d.id AS dress_id, i.available_quantity AS available_quantity, " +
+                  " i.purchase_date AS purchase_date, ist.quantity AS quantity, i.purchase_price AS purchase_price,"+
+                  " i.selling_price AS selling_price, i.damaged_quantity AS damaged_quantity, " +
+                  " d.name AS dress_name, d.brand AS dress_brand, d.gender AS dress_gender, d.color AS dress_color, "+ 
+                  " d.size AS dress_size, d.required_quantity AS dress_req_quantity "+ 
+                  " FROM inventory_in_supplier_transaction AS ist, inventory AS i, dress AS d "+
                   " WHERE ist.supplier_transaction_id = ? AND  i.id = ist.inventory_id AND d.id = i.dress_id";
 
         return jdbcTemplate.query(sql, (rs, rowNum) -> 
@@ -151,6 +158,8 @@ public class SupplierTransactionRepo {
                 , rs.getInt("dress_req_quantity"))), supp_txn_id);
 
     } catch (Exception e) {
+      System.out.println("error at this abv");
+      System.out.println(e);
       throw new RuntimeException(e);
     }
     }
@@ -179,6 +188,7 @@ public class SupplierTransactionRepo {
                           new SupplierCompleteTransaction(rs.getInt("id"), rs.getInt("supplier_id")
                             , rs.getDate("transaction_date").toLocalDate(), rs.getDouble("amount"), getStockDressDetails(rs.getInt("id"))), supp_id);
     } catch (Exception e) {
+        System.out.println(e);
         throw new RuntimeException(e);
     }
   }
