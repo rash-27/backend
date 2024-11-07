@@ -41,7 +41,7 @@ public class CustomerTransactionRepo {
                 jdbcTemplate.update(inventory_bought_by_customer, customerTransaction.customer_id(), stockDescription.id());
 
                 // Update stock
-                String updateStock = "UPDATE stock SET available_quantity = available_quantity - ?, damaged_quantity = damaged_quantity - ?  WHERE id = ?";
+                String updateStock = "UPDATE inventory SET available_quantity = available_quantity - ?, damaged_quantity = damaged_quantity - ?  WHERE id = ?";
                 jdbcTemplate.update(updateStock, stockDescription.available_quantity(), stockDescription.damaged_quantity(), stockDescription.id());
             }
 
