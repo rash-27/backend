@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import com.dbms.backend.models.dresses.DressDetails;
 import com.dbms.backend.models.stock.StockDescriptionSupplier;
 import com.dbms.backend.models.stock.StockDressDescription;
+import com.dbms.backend.models.transaction.OtherTransaction;
 import com.dbms.backend.models.transaction.SupplierCompleteTransaction;
 import com.dbms.backend.models.transaction.SupplierTransaction;
 import com.dbms.backend.models.transaction.UpdateTransactionInfo;
@@ -192,5 +193,23 @@ public class SupplierTransactionRepo {
         throw new RuntimeException(e);
     }
   }
+  
+    public List<OtherTransaction> getOtherTransaction(int user_id){
+    try {
+      String sql = "SELECT * FROM other_transaction WHERE user_id = ?";
+      return jdbcTemplate.query(sql, (rs, rowNum)->new OtherTransaction(rs.getInt("id"), rs.getInt("user_id"), rs.getDate("transaction_date").toLocalDate(), rs.getDouble("amount"), rs.getString("description")), user_id);
 
+    } catch (Exception e) {
+        throw new RuntimeException(e);
+    }
+  }
+  
+    public void addOtherTransaction(OtherTransaction otherTransaction, int user_id){
+    try {
+      String sql = "INSERT INTO other_transaction (user_id, transaction_date, amount, description ) VALUES (?, ?, ?, ?)";
+      jdbcTemplate.update(sql, user_id, otherTransaction.transaction_date(), otherTransaction.amount(), otherTransaction.description());
+    } catch (Exception e) {
+        throw new RuntimeException(e);
+    }
+  }
 }

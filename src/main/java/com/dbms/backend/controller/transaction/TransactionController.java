@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.dbms.backend.models.transaction.CustomerCompleteTransaction;
 import com.dbms.backend.models.transaction.CustomerTransaction;
+import com.dbms.backend.models.transaction.OtherTransaction;
 import com.dbms.backend.models.transaction.SupplierCompleteTransaction;
 import com.dbms.backend.models.transaction.SupplierTransaction;
 import com.dbms.backend.models.transaction.UpdateTransactionInfo;
@@ -177,6 +178,26 @@ public class TransactionController {
         return ResponseEntity.status(500).body(null);
     }
   }
+  // Other transactions 
+    @GetMapping("/other_transaction")
+    public ResponseEntity<List<OtherTransaction>> getOtherTransaction(HttpServletRequest request){
+    try { 
+      int user_id = Integer.parseInt(getTokenInfo.getId(request));
+      return ResponseEntity.ok(transactionService.getOtherTransaction(user_id));
+    } catch (Exception e) {
+        return ResponseEntity.status(500).body(null);
+    }
+  }
 
+    @PostMapping("/other_transaction")
+    public ResponseEntity<Boolean> addOtherTransaction(HttpServletRequest request, @RequestBody OtherTransaction otherTransaction){
+    try { 
+      int user_id = Integer.parseInt(getTokenInfo.getId(request));
+      transactionService.addOtherTransaction(otherTransaction, user_id);
+      return ResponseEntity.ok(true);
+    } catch (Exception e) {
+        return ResponseEntity.status(500).body(false);
+    }
+  }
 
 }

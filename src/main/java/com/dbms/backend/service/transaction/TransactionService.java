@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.dbms.backend.models.transaction.CustomerCompleteTransaction;
 import com.dbms.backend.models.transaction.CustomerTransaction;
+import com.dbms.backend.models.transaction.OtherTransaction;
 import com.dbms.backend.models.transaction.SupplierCompleteTransaction;
 import com.dbms.backend.models.transaction.SupplierTransaction;
 import com.dbms.backend.models.transaction.UpdateTransactionInfo;
@@ -162,4 +163,24 @@ public class TransactionService{
         throw new RuntimeException(e);
     }
   }
+
+    public List<OtherTransaction> getOtherTransaction(int user_id){
+    try {
+     return supplierTransactionRepo.getOtherTransaction(user_id);
+
+    } catch (Exception e) {
+        throw new RuntimeException(e);
+    }
+  }
+  
+    public void addOtherTransaction(OtherTransaction otherTransaction, int user_id){
+    try {
+    supplierTransactionRepo.addOtherTransaction(otherTransaction, user_id);
+
+    } catch (Exception e) {
+        throw new RuntimeException(e);
+    }
+  }
+
+  
 }
